@@ -1,0 +1,66 @@
+MOD = 10**9 + 7
+
+# Precompute factorials for binomial coefficients
+MAXN = 100000
+fact = [1] * (MAXN + 1)
+invfact = [1] * (MAXN + 1)
+
+def modinv(a, mod=MOD):
+    return pow(a, mod - 2, mod)
+
+def precompute():
+    for i in range(1, MAXN + 1):
+        fact[i] = fact[i-1] * i % MOD
+    invfact[MAXN] = modinv(fact[MAXN])
+    for i in range(MAXN, 0, -1):
+        invfact[i-1] = invfact[i] * i % MOD
+
+def nCr(n, r):
+    if r < 0 or r > n: return 0
+    return fact[n] * invfact[r] % MOD * invfact[n-r] % MOD
+
+def countInfectionSequences(n, infected):
+    infected.sort()
+    total_ways = 1
+    total_empty = 0
+    gaps = []
+
+    # Between infected houses
+    for i in range(1, len(infected)):
+        gap = infected[i] - infected[i-1] - 1
+        if gap > 0:
+            gaps.append(gap)
+            total_empty += gap
+
+    # Left side gap
+    left_gap = infected[0] - 1
+    if left_gap > 0:
+        total_empty += left_gap
+
+    # Right side gap
+    right_gap = n - infected[-1]
+    if right_gap > 0:
+        total_empty += right_gap
+
+    # Now compute number of ways
+    for g in gaps:
+        # Middle gaps: multiply by 2^(g-1)
+        total_ways = total_ways * pow(2, g-1, MOD) % MOD
+
+    # Finally, multinomial coefficient: distribute total_empty houses
+    total_ways = total_ways * fact[total_empty] % MOD
+    for g in gaps:
+        total_ways = total_ways * invfact[g] % MOD
+    if left_gap > 0:
+        total_ways = total_ways * invfact[left_gap] % MOD
+    if right_gap > 0:
+        total_ways = total_ways * invfact[right_gap] % MOD
+
+    return total_ways % MOD
+
+# Example usage
+if __name__ == "__main__":
+    precompute()
+    print(countInfectionSequences(5, [1,5]))  # Expected 2
+    print(countInfectionSequences(6, [3,5]))  # Expected 6
+    print(countInfectionSequences(4, [1]))    # Expected 1
