@@ -2,7 +2,7 @@
 
 **iTrack** is a non-intrusive, computer vision-based application designed to monitor and quantify user attention in real-time. Built for educational and corporate environments, it uses a standard webcam to analyze facial cues and classify engagement levels using deep learning.
 
-![System Workflow](system_workflow.png)
+![System Workflow](ComponentDiagram.png)
 
 
 ## 🚀 Key Features
